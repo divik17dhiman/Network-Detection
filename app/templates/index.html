@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Security Incidents</title>
+</head>
+<body>
+    <h1>Network Security Incidents</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Timestamp</th>
+        </tr>
+        {% for incident in incidents %}
+        <tr>
+            <td>{{ incident[0] }}</td>
+            <td>{{ incident[1] }}</td>
+            <td>{{ incident[2] }}</td>
+            <td>{{ incident[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
