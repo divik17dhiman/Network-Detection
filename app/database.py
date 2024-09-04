@@ -14,7 +14,7 @@ def initialize_database():
     conn.commit()
     conn.close()
 
-def log_incidents(attack_type, details):
+def log_incident(attack_type, details):
     conn = sqlite3.connect("incidents.db")
     cursor = conn.cursor()
     cursor.execute("INSERT INTO incidents (type, details) VALUES (?, ?)", (attack_type, details))

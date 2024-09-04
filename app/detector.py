@@ -1,7 +1,7 @@
 import scapy.all as scapy
 import psutil
 from threading import Thread
-from app.database import log_incidents
+from app.database import log_incident
 
 def detect_arp_spoofing(packet):
     if packet.haslayer(scapy.ARP) and packet[scapy.ARP].op == 2:
