@@ -24,6 +24,13 @@ def monitor_network_usage():
         # Add a delay to prevent excessive CPU usage
         time.sleep(1)
 
+def detect_port_scanning(packet):
+    if packet.haslayer(scapy.TCP) and packet[scapy.TCP].flags == "S":
+        src_ip = packet[scapy.IP].src
+        dst_port = packet[scapy.TCP].dport
+        log_incident("Port Scanning", f"Source IP: {src_ip} is scanning port {dst_port}")
+        print(f"Port Scanning Detected: Source IP {src_ip} is scanning port {dst_port}")
+
 def start_detection():
     # Start the ARP spoofing detection in a separate thread
     arp_thread = Thread(target=scapy.sniff, kwargs={"prn": detect_arp_spoofing, "store": False})
@@ -32,3 +39,7 @@ def start_detection():
     # Start the DDoS monitoring in another thread
     ddos_thread = Thread(target=monitor_network_usage)
     ddos_thread.start()
+
+    # Start the Port Scanning detection in another thread
+    port_scan_thread = Thread(target=scapy.sniff, kwargs={"prn": detect_port_scanning, "store": False})
+    port_scan_thread.start()

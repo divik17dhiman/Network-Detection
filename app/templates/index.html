@@ -48,6 +48,15 @@
             text-align: center;
             color: #6c757d;
         }
+        tr.arp-spoofing {
+            background-color: #ffe6cc; /* Light Orange */
+        }
+        tr.ddos-attack {
+            background-color: #ffffcc; /* Light Yellow */
+        }
+        tr.port-scanning {
+            background-color: #ffcccc; /* Light Red */
+        }
     </style>
 </head>
 
@@ -66,7 +75,15 @@
                 </thead>
                 <tbody>
                     {% for incident in incidents %}
-                    <tr>
+                    <tr class="
+                        {% if incident[1] == 'ARP Spoofing' %}
+                        arp-spoofing
+                        {% elif incident[1] == 'DDoS Attack' %}
+                        ddos-attack
+                        {% elif incident[1] == 'Port Scanning' %}
+                        port-scanning
+                        {% endif %}
+                    ">
                         <td>{{ incident[0] }}</td>
                         <td>{{ incident[1] }}</td>
                         <td>{{ incident[2] }}</td>
@@ -79,7 +96,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2024 Network Security Tool</p>
+        <p>&copy; Divik Dhiman, Safal Goyal</p>
     </footer>
 
     <!-- Bootstrap JS (Optional, for interactive features like modals, tooltips, etc.) -->
