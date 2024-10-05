@@ -15,8 +15,23 @@ def detect_arp_spoofing(packet):
         except Exception as e:
             pass
 
+def detect_dns_spoofing(packet):
+    if packet.haslayer(scapy.DNSRR):  # DNS Resource Record (DNS response)
+        # Extract details from the DNS response
+        spoofed_ip = packet[scapy.DNSRR].rdata  # The IP address provided in the DNS response
+        queried_domain = packet[scapy.DNSQR].qname.decode()  # The domain name being queried
+        
+        # Check if the IP address returned by DNS is the legitimate one
+        try:
+            legitimate_ips = scapy.gethostbyname(queried_domain)
+            if spoofed_ip not in legitimate_ips:
+                log_incident("DNS Spoofing", f"DNS query for {queried_domain} returned spoofed IP: {spoofed_ip}")
+                print(f"DNS Spoofing Detected: {queried_domain} resolved to {spoofed_ip} instead of {legitimate_ips}")
+        except Exception as e:
+            pass
+
 def monitor_network_usage():
-    threshold = 1000000  # 1MB threshold for DDoS detection
+    threshold = 1000000000 # 1MB threshold for DDoS detection
     while True:
         bytes_received = psutil.net_io_counters().bytes_recv
         if bytes_received > threshold:
@@ -35,7 +50,10 @@ def detect_port_scanning(packet):
 def start_detection():
     # Start the ARP spoofing detection in a separate thread
     arp_thread = Thread(target=scapy.sniff, kwargs={"prn": detect_arp_spoofing, "store": False})
-    arp_thread.start()
+    arp_thread.start() 
+
+    dns_thread = Thread(target=scapy.sniff, kwargs={"filter": "udp port 53", "prn": detect_dns_spoofing, "store": False})
+    dns_thread.start()
 
     # Start the DDoS monitoring in another thread
     ddos_thread = Thread(target=monitor_network_usage)

@@ -57,12 +57,30 @@
         tr.port-scanning {
             background-color: #ffcccc; /* Light Red */
         }
+        tr.dns-spoofing {
+            background-color: #76ab6e; /* Light Red */
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Network Security Incidents</h1>
+        <form action="/clear" method="get">
+            <button type="submit" class="button">Clear Database</button>
+        </form>
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark">
