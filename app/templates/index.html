@@ -11,83 +11,117 @@
     <!-- Custom Styles -->
     <style>
         body {
+            background-color: #f8f9fa;
             font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
         }
+
+        .container {
+            margin-top: 50px;
+        }
+
         h1 {
-            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
         }
-        #incident-list {
+
+        table {
             margin-top: 20px;
         }
-        .incident-item {
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #fff;
+
+        th, td {
+            text-align: center;
+            vertical-align: middle;
         }
-        button {
-            padding: 10px 15px;
-            margin: 5px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007BFF;
+
+        th {
+            background-color: #343a40;
             color: white;
-            cursor: pointer;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #6c757d;
+        }
+        tr.arp-spoofing {
+            background-color: #ffe6cc; /* Light Orange */
+        }
+        tr.ddos-attack {
+            background-color: #ffffcc; /* Light Yellow */
+        }
+        tr.port-scanning {
+            background-color: #ffcccc; /* Light Red */
+        }
+        tr.dns-spoofing {
+            background-color: #76ab6e; /* Light Red */
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+            cursor: pointer;s
+            border: none;
+            border-radius: 5px;
         }
     </style>
 </head>
 
 <body>
-    <h1>Incident Reports</h1>
+    <div class="container">
+        <h1>Network Security Incidents</h1>
+        <div class="btn-container">
+            <!-- Add Reset Database Button -->
+            <a href="/reset" class="btn btn-danger btn-lg">Reset Database</a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Details</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for incident in incidents %}
+                    <tr class="
+                        {% if incident[1] == 'ARP Spoofing' %}
+                        arp-spoofing
+                        {% elif incident[1] == 'DDoS Attack' %}
+                        ddos-attack
+                        {% elif incident[1] == 'Port Scanning' %}
+                        port-scanning
+                        {% endif %}
+                    ">
+                        <td>{{ incident[0] }}</td>
+                        <td>{{ incident[1] }}</td>
+                        <td>{{ incident[2] }}</td>
+                        <td>{{ incident[3] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<!-- Reset Database Button -->
-<button onclick="resetDatabase()">Reset Database</button>
+    <footer>
+        <p>&copy; Divik Dhiman, Safal Goyal</p>
+    </footer>
 
-<!-- Incident list will be dynamically updated here -->
-<div id="incident-list"></div>
-
-<script>
-    function fetchIncidents() {
-        fetch('/get_incidents')
-            .then(response => response.json())
-            .then(data => {
-                const incidentList = document.getElementById('incident-list');
-                incidentList.innerHTML = ''; // Clear the current list
-
-                // Loop through the incidents and render them
-                data.incidents.forEach(incident => {
-                    const incidentItem = document.createElement('div');
-                    incidentItem.className = 'incident-item'; // Add class for styling
-                    incidentItem.innerHTML = `<p><strong>${incident.type}</strong>: ${incident.details} <br>Time: ${incident.timestamp}</p>`;
-                    incidentList.appendChild(incidentItem);
-                });
-            })
-            .catch(error => console.error('Error fetching incidents:', error));
-    }
-
-    function resetDatabase() {
-        fetch('/reset_db')
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message); // Show a message after resetting
-                fetchIncidents(); // Fetch incidents again after reset
-            })
-            .catch(error => console.error('Error resetting database:', error));
-    }
-
-    // Fetch incidents every 5 seconds
-    setInterval(fetchIncidents, 5000);
-
-    // Fetch incidents when the page loads
-    fetchIncidents();
-</script>
+    <!-- Bootstrap JS (Optional, for interactive features like modals, tooltips, etc.) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

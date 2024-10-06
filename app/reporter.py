@@ -11,37 +11,18 @@ def create_app():
 
     @app.route('/')
     def index():
-        return render_template("index.html")
-
-    @app.route('/get_incidents')
-    def get_incidents():
         conn = sqlite3.connect("incidents.db")
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM incidents")
         incidents = cursor.fetchall()
         conn.close()
-
-        # Prepare the data in JSON format
-        incident_list = []
-        for incident in incidents:
-            incident_list.append({
-                "id": incident[0],
-                "type": incident[1],
-                "details": incident[2],
-                "timestamp": incident[3]
-            })
-
-        return jsonify(incidents=incident_list)
+        return render_template("index.html", incidents=incidents)
     
 
-    @app.route('/reset_db')
+    @app.route('/reset')
     def reset_db():
-        conn = sqlite3.connect("incidents.db")
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM incidents")  # This will remove all records
-        conn.commit()
-        conn.close()
-        return jsonify(message="Database has been reset successfully.")
+        reset_database()
+        return redirect(url_for('index'))
     
 
     return app
