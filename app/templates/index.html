@@ -7,121 +7,131 @@
     <title>Network Security Incidents</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- Custom Styles -->
     <style>
         body {
-            background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4; /* Light gray background */
         }
-
-        .container {
-            margin-top: 50px;
-        }
-
         h1 {
+            color: #333; /* Darker color for headings */
             text-align: center;
-            margin-bottom: 30px;
-            color: #343a40;
         }
-
-        table {
-            margin-top: 20px;
+        h2 {
+            color: #555; /* Lighter gray for subheadings */
         }
-
-        th, td {
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        th {
-            background-color: #343a40;
-            color: white;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #6c757d;
-        }
-        tr.arp-spoofing {
-            background-color: #ffe6cc; /* Light Orange */
-        }
-        tr.ddos-attack {
-            background-color: #ffffcc; /* Light Yellow */
-        }
-        tr.port-scanning {
-            background-color: #ffcccc; /* Light Red */
-        }
-        tr.dns-spoofing {
-            background-color: #76ab6e; /* Light Red */
-        }
-        .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            margin: 10px 0;
-            cursor: pointer;s
+        button {
+            padding: 10px 15px;
+            margin: 10px;
             border: none;
             border-radius: 5px;
+            background-color: #007BFF; /* Bootstrap primary color */
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s; /* Smooth background transition */
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff; /* White background for the table */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        }
+        th, td {
+            padding: 12px; /* More padding for table cells */
+            text-align: left; /* Align text to the left */
+            border-bottom: 1px solid #ddd; /* Light gray border between rows */
+        }
+        th {
+            background-color: #007BFF; /* Header color */
+            color: white; /* White text for header */
+        }
+        tr:hover {
+            background-color: #f1f1f1; /* Light gray on hover for rows */
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Network Security Incidents</h1>
-        <div class="btn-container">
-            <!-- Add Reset Database Button -->
-            <a href="/reset" class="btn btn-danger btn-lg">Reset Database</a>
-        </div>
-        
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Type</th>
-                        <th>Details</th>
-                        <th>Timestamp</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for incident in incidents %}
-                    <tr class="
-                        {% if incident[1] == 'ARP Spoofing' %}
-                        arp-spoofing
-                        {% elif incident[1] == 'DDoS Attack' %}
-                        ddos-attack
-                        {% elif incident[1] == 'Port Scanning' %}
-                        port-scanning
-                        {% endif %}
-                    ">
-                        <td>{{ incident[0] }}</td>
-                        <td>{{ incident[1] }}</td>
-                        <td>{{ incident[2] }}</td>
-                        <td>{{ incident[3] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <h1>Network Attack Detector</h1>
 
-    <footer>
-        <p>&copy; Divik Dhiman, Safal Goyal</p>
-    </footer>
+    <button onclick="resetDatabase()">Reset Database</button>
 
-    <!-- Bootstrap JS (Optional, for interactive features like modals, tooltips, etc.) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <h2>Incidents</h2>
+    <table id="incidentTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="incidentBody">
+            <!-- Incident data will be dynamically populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        let lastIncidentId = 0; // Track the highest incident ID seen
+    
+        function fetchIncidents() {
+            fetch('/incidents')
+                .then(response => response.json())
+                .then(data => {
+                    const incidentBody = document.getElementById('incidentBody');
+                    let newIncidentDetected = false;
+    
+                    data.forEach(incident => {
+                        if (incident[0] > lastIncidentId) {
+                            // Update lastIncidentId to the highest ID received
+                            lastIncidentId = Math.max(lastIncidentId, incident[0]);
+                            const row = document.createElement('tr');
+                            row.innerHTML = `<td>${incident[0]}</td><td>${incident[1]}</td><td>${incident[2]}</td><td>${incident[3]}</td>`;
+                            incidentBody.appendChild(row);
+                            newIncidentDetected = true; // Found a new incident
+                        }
+                    });
+    
+                    // Optionally log when new incidents are detected
+                    if (newIncidentDetected) {
+                        console.log('New incidents detected.');
+                    }
+                })
+                .catch(error => console.error('Error fetching incidents:', error));
+        }
+    
+        function clearTable() {
+            const incidentBody = document.getElementById('incidentBody');
+            incidentBody.innerHTML = ''; // Clear the displayed incidents table
+        }
+    
+        function resetDatabase() {
+            fetch('/reset', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        clearTable(); // Clear the displayed incidents table
+                        lastIncidentId = 0; // Reset last incident ID after reset
+                        alert('Database reset successfully.');
+                    } else {
+                        alert('Failed to reset the database.');
+                    }
+                })
+                .catch(error => console.error('Error resetting database:', error));
+        }
+    
+        // Fetch incidents every 5 seconds
+        setInterval(fetchIncidents, 5000);
+    </script>
+    
+    
 </body>
 
 </html>

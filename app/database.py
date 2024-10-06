@@ -24,19 +24,6 @@ def log_incident(attack_type, details):
 def reset_database():
     conn = sqlite3.connect("incidents.db")
     cursor = conn.cursor()
-
-    # Drop the existing table if it exists
-    cursor.execute("DROP TABLE IF EXISTS incidents")
-
-    # Recreate the incidents table
-    cursor.execute("""
-    CREATE TABLE incidents (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        type TEXT NOT NULL,
-        details TEXT NOT NULL,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    
-    conn.commit()
+    cursor.execute("DROP TABLE IF EXISTS incidents")  # Drop the incidents table
+    initialize_database()  # Recreate the incidents table
     conn.close()
