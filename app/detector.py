@@ -4,6 +4,7 @@ from threading import Thread
 from app.database import log_incident
 import time
 
+
 def detect_arp_spoofing(packet):
     if packet.haslayer(scapy.ARP) and packet[scapy.ARP].op == 2:
         try:
@@ -32,7 +33,7 @@ def detect_dns_spoofing(packet):
 
 def monitor_network_usage():
     threshold = 1000000000 # 1MB threshold for DDoS detection
-    while True:
+    while true:
         bytes_received = psutil.net_io_counters().bytes_recv
         if bytes_received > threshold:
             log_incident("DDoS Attack", f"Bytes received: {bytes_received}")
@@ -48,7 +49,6 @@ def detect_port_scanning(packet):
         print(f"Port Scanning Detected: Source IP {src_ip} is scanning port {dst_port}")
 
 def start_detection():
-    # Start the ARP spoofing detection in a separate thread
     arp_thread = Thread(target=scapy.sniff, kwargs={"prn": detect_arp_spoofing, "store": False})
     arp_thread.start() 
 
@@ -62,3 +62,4 @@ def start_detection():
     # Start the Port Scanning detection in another thread
     port_scan_thread = Thread(target=scapy.sniff, kwargs={"prn": detect_port_scanning, "store": False})
     port_scan_thread.start()
+
